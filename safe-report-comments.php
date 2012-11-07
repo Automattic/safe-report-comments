@@ -48,9 +48,9 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 			$this->_auto_init = $auto_init;
 			
 			if ( !is_admin() || ( defined( 'DOING_AJAX' ) && true === DOING_AJAX ) ) {
-				$this->frontend_init();
+				add_action( 'init', array( $this, 'frontend_init' ) );
 			} else if ( is_admin() ) {
-				$this->backend_init();
+				add_action( 'admin_init', array( $this, 'backend_init' ) );
 			}
 			add_action( 'comment_unapproved_to_approved', array( &$this, 'mark_comment_moderated' ), 10, 1 );
 			
@@ -69,8 +69,19 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 * - register_admin_panel
 		 * - admin_header
 		 */
-		protected function backend_init() {
+		public function backend_init() {
 			do_action( 'safe_report_comments_backend_init' );
+
+			add_settings_field( $this->_plugin_prefix . '_enabled', __( 'Allow comment flagging' ), array( &$this, 'comment_flag_enable' ), 'discussion', 'default' );
+			register_setting( 'discussion', $this->_plugin_prefix . '_enabled' );
+
+			if ( ! $this->is_enabled() )
+				return;
+
+			add_settings_field( $this->_plugin_prefix . '_threshold', __( 'Flagging threshold' ), array( &$this, 'comment_flag_threshold' ), 'discussion', 'default' );
+			register_setting( 'discussion', $this->_plugin_prefix . '_threshold', array( &$this, 'check_threshold' ) );
+			add_filter('manage_edit-comments_columns', array( &$this, 'add_comment_reported_column' ) );
+			add_action('manage_comments_custom_column', array( &$this, 'manage_comment_reported_column' ), 10, 2);
 				
 			add_action( 'admin_menu', array( &$this, 'register_admin_panel' ) );
 			add_action( 'admin_head', array( &$this, 'admin_header' ) );
@@ -79,22 +90,29 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		/*
 		 * Initialize frontend functions
 		 */
-		protected function frontend_init() {
-			if ( $this->is_enabled() ) {
-				global $current_blog;
-				do_action( 'safe_report_comments_frontend_init' );
+		public function frontend_init() {
+			
+			if ( ! $this->is_enabled() )
+				return;
+
+			do_action( 'safe_report_comments_frontend_init' );
+			
+			add_action( 'wp_ajax_safe_report_comments_flag_comment', array( &$this, 'flag_comment' ) );
+			add_action( 'wp_ajax_nopriv_safe_report_comments_flag_comment', array( &$this, 'flag_comment' ) );
+			
+			add_action( 'wp_enqueue_scripts', array( $this, 'action_enqueue_scripts' ) );
+
+			if ( $this->_auto_init ) 
+				add_filter( 'comment_reply_link', array( &$this, 'add_flagging_link' ) );
+			add_action( 'comment_report_abuse_link', array( &$this, 'print_flagging_link' ) );
 				
-				add_action( 'wp_ajax_safe_report_comments_flag_comment', array( &$this, 'flag_comment' ) );
-				add_action( 'wp_ajax_nopriv_safe_report_comments_flag_comment', array( &$this, 'flag_comment' ) );
-				
-				wp_enqueue_script( $this->_plugin_prefix . '-ajax-request', $this->plugin_url . '/js/ajax.js', array( 'jquery' ) );
-				wp_localize_script( $this->_plugin_prefix . '-ajax-request', 'SafeCommentsAjax', array( 'ajaxurl' => $current_blog->siteurl . '/wp-admin/admin-ajax.php' ) ); // slightly dirty but needed due to possible problems with mapped domains
-				if ( $this->_auto_init ) 
-					add_filter( 'comment_reply_link', array( &$this, 'add_flagging_link' ) );
-				add_action( 'comment_report_abuse_link', array( &$this, 'print_flagging_link' ) );
-					
-				add_action( 'template_redirect', array( $this, 'add_test_cookie' ) ); // need to do this at template_redirect because is_feed isn't available yet
-			}
+			add_action( 'template_redirect', array( $this, 'add_test_cookie' ) ); // need to do this at template_redirect because is_feed isn't available yet
+		}
+
+		public function action_enqueue_scripts() {
+
+			wp_enqueue_script( $this->_plugin_prefix . '-ajax-request', $this->plugin_url . '/js/ajax.js', array( 'jquery' ) );
+			wp_localize_script( $this->_plugin_prefix . '-ajax-request', 'SafeCommentsAjax', array( 'ajaxurl' => home_url( '/wp-admin/admin-ajax.php' ) ) ); // slightly dirty but needed due to possible problems with mapped domains
 		}
 
 		public function add_test_cookie() {
@@ -106,21 +124,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 					@setcookie(TEST_COOKIE, 'WP Cookie check', 0, SITECOOKIEPATH, COOKIE_DOMAIN);
 			}
 		}
-		
-		/*
-		 */
-		public function register_admin_panel() {
-			add_settings_field( $this->_plugin_prefix . '_enabled', __( 'Allow comment flagging' ), array( &$this, 'comment_flag_enable' ), 'discussion', 'default' );
-			register_setting( 'discussion', $this->_plugin_prefix . '_enabled' );
-			
-			if ( $this->is_enabled() ) {
-				add_settings_field( $this->_plugin_prefix . '_threshold', __( 'Flagging threshold' ), array( &$this, 'comment_flag_threshold' ), 'discussion', 'default' );
-				register_setting( 'discussion', $this->_plugin_prefix . '_threshold', array( &$this, 'check_threshold' ) );
-				add_filter('manage_edit-comments_columns', array( &$this, 'add_comment_reported_column' ) );
-				add_action('manage_comments_custom_column', array( &$this, 'manage_comment_reported_column' ), 10, 2);
-			}
-		}
-		
+
 		/*
 		 * Add necessary header scripts 
 		 * Currently only used for admin notices

@@ -87,7 +87,6 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 				add_action( 'wp_ajax_safe_report_comments_flag_comment', array( &$this, 'flag_comment' ) );
 				add_action( 'wp_ajax_nopriv_safe_report_comments_flag_comment', array( &$this, 'flag_comment' ) );
 				
-				add_action( 'wp_head', array( &$this, 'frontend_header' ) );
 				wp_enqueue_script( $this->_plugin_prefix . '-ajax-request', $this->plugin_url . '/js/ajax.js', array( 'jquery' ) );
 				wp_localize_script( $this->_plugin_prefix . '-ajax-request', 'SafeCommentsAjax', array( 'ajaxurl' => $current_blog->siteurl . '/wp-admin/admin-ajax.php' ) ); // slightly dirty but needed due to possible problems with mapped domains
 				if ( $this->_auto_init ) 
@@ -120,19 +119,6 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 				add_filter('manage_edit-comments_columns', array( &$this, 'add_comment_reported_column' ) );
 				add_action('manage_comments_custom_column', array( &$this, 'manage_comment_reported_column' ), 10, 2);
 			}
-		}
-		
-		/*
-		 * Add CSS style 
-		 */
-		public function frontend_header() {
-?>
-<style type="text/css">
-.hide-if-no-js {
-	display: none;
-}
-</style>
-<?php
 		}
 		
 		/*

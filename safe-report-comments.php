@@ -50,7 +50,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 			} else if ( is_admin() ) {
 				add_action( 'admin_init', array( $this, 'backend_init' ) );
 			}
-			add_action( 'comment_unapproved_to_approved', array( &$this, 'mark_comment_moderated' ), 10, 1 );
+			add_action( 'comment_unapproved_to_approved', array( $this, 'mark_comment_moderated' ), 10, 1 );
 			
 			// apply some filters to easily alter the frontend messages 
 			// add_filter( 'safe_report_comments_thank_you_message', 'alter_message' ); // this or similar will do the job
@@ -70,19 +70,19 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		public function backend_init() {
 			do_action( 'safe_report_comments_backend_init' );
 
-			add_settings_field( $this->_plugin_prefix . '_enabled', __( 'Allow comment flagging' ), array( &$this, 'comment_flag_enable' ), 'discussion', 'default' );
+			add_settings_field( $this->_plugin_prefix . '_enabled', __( 'Allow comment flagging' ), array( $this, 'comment_flag_enable' ), 'discussion', 'default' );
 			register_setting( 'discussion', $this->_plugin_prefix . '_enabled' );
 
 			if ( ! $this->is_enabled() )
 				return;
 
-			add_settings_field( $this->_plugin_prefix . '_threshold', __( 'Flagging threshold' ), array( &$this, 'comment_flag_threshold' ), 'discussion', 'default' );
-			register_setting( 'discussion', $this->_plugin_prefix . '_threshold', array( &$this, 'check_threshold' ) );
-			add_filter('manage_edit-comments_columns', array( &$this, 'add_comment_reported_column' ) );
-			add_action('manage_comments_custom_column', array( &$this, 'manage_comment_reported_column' ), 10, 2);
+			add_settings_field( $this->_plugin_prefix . '_threshold', __( 'Flagging threshold' ), array( $this, 'comment_flag_threshold' ), 'discussion', 'default' );
+			register_setting( 'discussion', $this->_plugin_prefix . '_threshold', array( $this, 'check_threshold' ) );
+			add_filter('manage_edit-comments_columns', array( $this, 'add_comment_reported_column' ) );
+			add_action('manage_comments_custom_column', array( $this, 'manage_comment_reported_column' ), 10, 2);
 				
-			add_action( 'admin_menu', array( &$this, 'register_admin_panel' ) );
-			add_action( 'admin_head', array( &$this, 'admin_header' ) );
+			add_action( 'admin_menu', array( $this, 'register_admin_panel' ) );
+			add_action( 'admin_head', array( $this, 'admin_header' ) );
 		}
 
 		/*
@@ -98,14 +98,14 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 
 			do_action( 'safe_report_comments_frontend_init' );
 			
-			add_action( 'wp_ajax_safe_report_comments_flag_comment', array( &$this, 'flag_comment' ) );
-			add_action( 'wp_ajax_nopriv_safe_report_comments_flag_comment', array( &$this, 'flag_comment' ) );
+			add_action( 'wp_ajax_safe_report_comments_flag_comment', array( $this, 'flag_comment' ) );
+			add_action( 'wp_ajax_nopriv_safe_report_comments_flag_comment', array( $this, 'flag_comment' ) );
 			
 			add_action( 'wp_enqueue_scripts', array( $this, 'action_enqueue_scripts' ) );
 
 			if ( $this->_auto_init ) 
-				add_filter( 'comment_reply_link', array( &$this, 'add_flagging_link' ) );
-			add_action( 'comment_report_abuse_link', array( &$this, 'print_flagging_link' ) );
+				add_filter( 'comment_reply_link', array( $this, 'add_flagging_link' ) );
+			add_action( 'comment_report_abuse_link', array( $this, 'print_flagging_link' ) );
 				
 			add_action( 'template_redirect', array( $this, 'add_test_cookie' ) ); // need to do this at template_redirect because is_feed isn't available yet
 		}
@@ -133,7 +133,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		public function admin_header() {
 			// print admin notice in case of notice strings given
 			if ( !empty( $this->_admin_notices ) ) {
-					add_action('admin_notices' , array( &$this, 'print_admin_notice' ) );
+					add_action('admin_notices' , array( $this, 'print_admin_notice' ) );
 			}
 ?>
 <style type="text/css">

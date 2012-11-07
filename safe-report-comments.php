@@ -20,7 +20,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		private $_auto_init = true;
 		private $_storagecookie = 'sfrc_flags';
 		
-		public $plugin_url = '/wp-content/themes/vip/plugins/safe-report-comments';		// adjust to reflect custom installations or leave empty
+		public $plugin_url = false;
 		
 		public $thank_you_message = 'Thank you for your feedback. We will look into it.';
 		public $invalid_nonce_message = 'It seems you already reported this comment. <!-- nonce invalid -->';
@@ -38,9 +38,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		public $transient_lifetime = 86400; // lifetime of fallback transients. lower to keep things usable and c
 		
 		public function __construct( $auto_init=true ) {
-			if ( empty( $this->plugin_url ) )
-				$this->plugin_url = WP_PLUGIN_URL . '/safe-report-comments';
-		
+
 			$this->_admin_notices = get_transient( $this->_plugin_prefix . '_notices' );
 			if ( !is_array( $this->_admin_notices ) ) 
 				$this->_admin_notices = array();
@@ -94,6 +92,9 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 			
 			if ( ! $this->is_enabled() )
 				return;
+
+			if ( ! $this->plugin_url )
+				$this->plugin_url = plugins_url( false, __FILE__ );
 
 			do_action( 'safe_report_comments_frontend_init' );
 			

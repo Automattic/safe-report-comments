@@ -1,9 +1,9 @@
 === Safe Report Comments ===
-Contributors: tott, automattic
+Contributors: tott, danielbachhuber, automattic
 Tags: flagging, flag, comments, report comments, report, inappropriate, spam
-Requires at least: 2.9.2
-Tested up to: 3.0-beta1
-Stable tag: trunk
+Requires at least: 3.3
+Tested up to: 3.4.2
+Stable tag: 0.2
 
 This plugin gives your visitors the possibility to report a comment as inappropriate. After a set threshold is reached the comment is put into moderation where the moderator can decide whether or not he want to approve the comment or not. If a comment is approved by a moderator it will not be auto-moderated again while still counting the amount of reports. 
 
@@ -25,6 +25,11 @@ This plugin gives your visitors the possibility to report a comment as inappropr
 2. Amount of reports per comment is shown in comments administration screen
 3. Fits well within most themes without any further action.
 4. Ajax feedback right in place where available.
+
+== Changelog ==
+
+= 0.3 (???? ??, 2012) =
+* Coding standards and cleanup
 
 == Customizations ==
 

@@ -3,9 +3,9 @@
 Plugin Name: Safe Report Comments
 Plugin Script: safe-report-comments.php
 Plugin URI: http://wordpress.org/extend/plugins/safe-report-comments/
-Description: <strong>This plugin has been modified by Crowd Favorite. Please review source before updating.</strong> This script gives visitors the possibility to flag/report a comment as inapproriate. 
+Description: This script gives visitors the possibility to flag/report a comment as inapproriate. 
 After reaching a threshold the comment is moved to moderation. If a comment is approved once by a moderator future reports will be ignored.
-Version: 0.3 (cf-modified)
+Version: 0.3
 Author: Thorsten Ott, Daniel Bachhuber, Automattic
 Author URI: http://automattic.com
 */
@@ -113,7 +113,6 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		public function action_enqueue_scripts() {
 
 			wp_enqueue_script( $this->_plugin_prefix . '-ajax-request', $this->plugin_url . '/js/ajax.js', array( 'jquery' ) );
-			// The line below was modified by @crowdfavorite to address issues with installs that have WP in a subdirectory
 			wp_localize_script( $this->_plugin_prefix . '-ajax-request', 'SafeCommentsAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) ); // slightly dirty but needed due to possible problems with mapped domains
 		}
 

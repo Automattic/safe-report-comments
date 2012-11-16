@@ -113,7 +113,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		public function action_enqueue_scripts() {
 
 			wp_enqueue_script( $this->_plugin_prefix . '-ajax-request', $this->plugin_url . '/js/ajax.js', array( 'jquery' ) );
-			wp_localize_script( $this->_plugin_prefix . '-ajax-request', 'SafeCommentsAjax', array( 'ajaxurl' => home_url( '/wp-admin/admin-ajax.php' ) ) ); // slightly dirty but needed due to possible problems with mapped domains
+			wp_localize_script( $this->_plugin_prefix . '-ajax-request', 'SafeCommentsAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) ); // slightly dirty but needed due to possible problems with mapped domains
 		}
 
 		public function add_test_cookie() {

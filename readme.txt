@@ -28,6 +28,9 @@ This plugin gives your visitors the possibility to report a comment as inappropr
 
 == Changelog ==
 
+= 0.3.1 (Nov. 21, 2012) =
+* Use home_url() for generating the ajaxurl on mapped domains, but admin_url() where the domain isn't mapped.
+
 = 0.3 (Nov. 7, 2012) =
 * Coding standards and cleanup
 

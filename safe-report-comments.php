@@ -327,7 +327,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 * Die() with or without screen based on JS availability
 		 */
 		private function cond_die( $message ) {
-			if ( true == (boolean) $_REQUEST['no_js'] )
+			if ( isset( $_REQUEST['no_js'] ) && true == (boolean) $_REQUEST['no_js'] )
 				wp_die( __( $message ), "Safe Report Comments Notice", array('response' => 200 ) );
 			else
 				die( __( $message ) );

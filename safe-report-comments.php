@@ -281,12 +281,16 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 			if( isset( $_COOKIE[ TEST_COOKIE ] ) ) {
 				if ( isset( $_COOKIE[ $this->_storagecookie ] ) ) {
 					$data = $this->unserialize_cookie( $_COOKIE[ $this->_storagecookie ] );
+					if ( ! isset( $data[ $comment_id ] ) )
+						$data[ $comment_id ] = 0;
 					$data[ $comment_id ]++;
 					$cookie = $this->serialize_cookie( $data );
 					@setcookie( $this->_storagecookie, $cookie, time()+$this->cookie_lifetime, COOKIEPATH, COOKIE_DOMAIN );
 					if ( SITECOOKIEPATH != COOKIEPATH )
 						@setcookie( $this->_storagecookie, $cookie, time()+$this->cookie_lifetime, SITECOOKIEPATH, COOKIE_DOMAIN);
 				} else {
+					if ( ! isset( $data[ $comment_id ] ) )
+						$data[ $comment_id ] = 0;
 					$data[ $comment_id ]++;
 					$cookie = $this->serialize_cookie( $data );
 					@setcookie( $this->_storagecookie, $cookie, time()+$this->cookie_lifetime, COOKIEPATH, COOKIE_DOMAIN );

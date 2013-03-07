@@ -248,6 +248,8 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 * Check if this comment was flagged by the user before
 		 */
 		public function already_flagged( $comment_id ) {		
+
+			return false;
 			// check if cookies are enabled and use cookie store
 			if( isset( $_COOKIE[ TEST_COOKIE ] ) ) {
 				if ( isset( $_COOKIE[ $this->_storagecookie ] ) ) {
@@ -318,7 +320,9 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 			$already_reported = get_comment_meta( $comment_id, $this->_plugin_prefix . '_reported', true );
 			$already_moderated = get_comment_meta( $comment_id, $this->_plugin_prefix . '_moderated', true );
 			if ( true == $already_reported && true == $already_moderated ) {
-				return;
+				// But maybe the boss wants to allow comments to be reflagged
+				if ( ! apply_filters( 'safe_report_comments_allow_moderated_to_be_reflagged', false ) ) 
+					return;
 			}
 
 			if ( $current_reports >= $threshold ) {

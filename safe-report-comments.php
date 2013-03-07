@@ -249,7 +249,6 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 */
 		public function already_flagged( $comment_id ) {		
 
-			return false;
 			// check if cookies are enabled and use cookie store
 			if( isset( $_COOKIE[ TEST_COOKIE ] ) ) {
 				if ( isset( $_COOKIE[ $this->_storagecookie ] ) ) {

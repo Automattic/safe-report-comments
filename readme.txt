@@ -2,8 +2,8 @@
 Contributors: tott, danielbachhuber, automattic
 Tags: flagging, flag, comments, report comments, report, inappropriate, spam
 Requires at least: 3.3
-Tested up to: 3.5.2
-Stable tag: 0.3.2
+Tested up to: 3.9
+Stable tag: 0.4
 
 This plugin gives your visitors the possibility to report a comment as inappropriate. After a set threshold is reached the comment is put into moderation where the moderator can decide whether or not he want to approve the comment or not. If a comment is approved by a moderator it will not be auto-moderated again while still counting the amount of reports. 
 
@@ -27,6 +27,10 @@ This plugin gives your visitors the possibility to report a comment as inappropr
 4. Ajax feedback right in place where available.
 
 == Changelog ==
+
+= 0.4 (July 23, 2014) =
+
+* Security fix, h/t vortfu
 
 = 0.3.2 (Mar. 6, 2013) =
 * New 'safe_report_comments_allow_moderated_to_be_reflagged' filter allows comments to be reflagged after being moderated.

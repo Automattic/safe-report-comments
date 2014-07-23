@@ -232,7 +232,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 			return base64_encode( json_encode( $value ) );
 		}
 		private function unserialize_cookie( $value ) {
-			$data = $json_decode( base64_decode( $value ) );
+			$data = json_decode( base64_decode( $value ) );
 			return $this->clean_cookie_data( $data );
 		}
 

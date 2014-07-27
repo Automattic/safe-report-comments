@@ -1,0 +1,83 @@
+# Copyright (C) 2013 
+# This file is distributed under the same license as the  package.
+msgid ""
+msgstr ""
+"Project-Id-Version:  \n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/wp\n"
+"POT-Creation-Date: 2013-05-04 08:01:18+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2013-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: safe-report-comments.php:6 safe-report-comments.php:7
+msgid "This script gives visitors the possibility to flag/report a comment as inapproriate."
+msgstr ""
+
+#: safe-report-comments.php:7
+msgid "After reaching a threshold the comment is moved to moderation. If a comment is approved once by a moderator future reports will be ignored."
+msgstr ""
+
+#: safe-report-comments.php:27
+msgid "Thank you for your feedback. We will look into it."
+msgstr ""
+
+#: safe-report-comments.php:28
+msgid "It seems you already reported this comment. <!-- nonce invalid -->"
+msgstr ""
+
+#: safe-report-comments.php:29
+msgid "Cheating huh? <!-- invalid values -->"
+msgstr ""
+
+#: safe-report-comments.php:30
+msgid "It seems you already reported this comment. <!-- already flagged -->"
+msgstr ""
+
+#: safe-report-comments.php:31
+msgid "<!-- already flagged -->"
+msgstr ""
+
+#: safe-report-comments.php:77
+msgid "Allow comment flagging"
+msgstr ""
+
+#: safe-report-comments.php:83
+msgid "Flagging threshold"
+msgstr ""
+
+#: safe-report-comments.php:192
+msgid "Allow your visitors to flag a comment as inappropriate."
+msgstr ""
+
+#: safe-report-comments.php:205
+msgid "Amount of user reports needed to send a comment to moderation?"
+msgstr ""
+
+#: safe-report-comments.php:227
+msgid ""
+"Please revise your flagging threshold and enter a number between 1 and 100"
+msgstr ""
+
+#: safe-report-comments.php:342
+msgid "Safe Report Comments Notice"
+msgstr ""
+
+#: safe-report-comments.php:370
+msgid "Report comment"
+msgstr ""
+
+#: safe-report-comments.php:379
+msgid "Wrong usage of %s"
+msgstr ""
+
+#: safe-report-comments.php:387
+msgid "This comment does not exist."
+msgstr ""
+
+#: safe-report-comments.php:431
+msgctxt "column name"
+msgid "Reported"
+msgstr ""

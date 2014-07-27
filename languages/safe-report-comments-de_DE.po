@@ -1,0 +1,82 @@
+# Translation of Safe Report Comments in German
+# This file is distributed under the same license as the Safe Report Comments package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2013-05-04 09:34:05+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: translate.foe-services.de/ReGlot/0.1\n"
+"Project-Id-Version: Safe Report Comments\n"
+"Language-Team: Translate.foe-services.de <translate@foe-services.de>\n"
+"Language: German\n"
+
+#: safe-report-comments.php:192
+msgid "Allow your visitors to flag a comment as inappropriate."
+msgstr "Gib Besuchern die Möglichkeit Kommentare als unangemessen zu markieren."
+
+#: safe-report-comments.php:205
+msgid "Amount of user reports needed to send a comment to moderation?"
+msgstr "Anzahl der Nutzermeldungen, die nötig sind um Kommentare zur Moderation zu markieren."
+
+#: safe-report-comments.php:227
+msgid "Please revise your flagging threshold and enter a number between 1 and 100"
+msgstr "Bitte überprüfe den den Grenzwert für Meldungen und setze einen Wert zwischen 1 und 100"
+
+#: safe-report-comments.php:342
+msgid "Safe Report Comments Notice"
+msgstr "Safe Report Comments Meldung"
+
+#: safe-report-comments.php:370
+msgid "Report comment"
+msgstr "Kommentar melden"
+
+#: safe-report-comments.php:379
+msgid "Wrong usage of %s"
+msgstr "Falsche Nutzung von %s"
+
+#: safe-report-comments.php:387
+msgid "This comment does not exist."
+msgstr "Dieser Kommentar existiert nicht."
+
+#: safe-report-comments.php:431
+msgctxt "column name"
+msgid "Reported"
+msgstr "Gemeldet"
+
+#: safe-report-comments.php:7
+msgid "After reaching a threshold the comment is moved to moderation. If a comment is approved once by a moderator future reports will be ignored."
+msgstr "Nach dem Erreichen des Grenzwerts wird der Kommentar zur Moderation verschoben. Wurde ein Kommentar genehmigt durch einen Moderator, werden zukünftige Meldungen ignoriert."
+
+#: safe-report-comments.php:27
+msgid "Thank you for your feedback. We will look into it."
+msgstr "Danke für dein Feedback. Wir werden uns dem Thema annehmen."
+
+#: safe-report-comments.php:28
+msgid "It seems you already reported this comment. <!-- nonce invalid -->"
+msgstr "Es scheint, du hast den Kommentar bereits gemeldet. <!-- nonce invalid -->"
+
+#: safe-report-comments.php:29
+msgid "Cheating huh? <!-- invalid values -->"
+msgstr "Das ist unzulässig. <!-- invalid values -->"
+
+#: safe-report-comments.php:30
+msgid "It seems you already reported this comment. <!-- already flagged -->"
+msgstr "Es scheint, du hast den Kommentar bereits gemeldet. <!-- already flagged -->"
+
+#: safe-report-comments.php:31
+msgid "<!-- already flagged -->"
+msgstr "<!-- already flagged -->"
+
+#: safe-report-comments.php:77
+msgid "Allow comment flagging"
+msgstr "Meldung von Kommentaren erlauben"
+
+#: safe-report-comments.php:83
+msgid "Flagging threshold"
+msgstr "Grenzwert für Meldungen"
+
+#: safe-report-comments.php:6 safe-report-comments.php:7
+msgid "This script gives visitors the possibility to flag/report a comment as inapproriate."
+msgstr "Dieses Script gibt Besuchern die Möglichkeit unangemessene Kommentare zu melden."

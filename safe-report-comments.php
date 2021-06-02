@@ -40,8 +40,9 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		public function __construct( $auto_init=true ) {
 
 			$this->_admin_notices = get_transient( $this->_plugin_prefix . '_notices' );
-			if ( !is_array( $this->_admin_notices ) )
+			if ( !is_array( $this->_admin_notices ) ) {
 				$this->_admin_notices = array();
+			}
 			$this->_admin_notices = array_unique( $this->_admin_notices );
 			$this->_auto_init = $auto_init;
 
@@ -54,8 +55,9 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 
 			// apply some filters to easily alter the frontend messages
 			// add_filter( 'safe_report_comments_thank_you_message', 'alter_message' ); // this or similar will do the job
-			foreach( $this->filter_vars as $var )
+			foreach( $this->filter_vars as $var ) {
 				$this->{$var} = apply_filters( 'safe_report_comments_' . $var , $this->{$var} );
+			}
 		}
 
 		public function __destruct() {
@@ -73,8 +75,9 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 			add_settings_field( $this->_plugin_prefix . '_enabled', __( 'Allow comment flagging' ), array( $this, 'comment_flag_enable' ), 'discussion', 'default' );
 			register_setting( 'discussion', $this->_plugin_prefix . '_enabled' );
 
-			if ( ! $this->is_enabled() )
+			if ( ! $this->is_enabled() ) {
 				return;
+			}
 
 			add_settings_field( $this->_plugin_prefix . '_threshold', __( 'Flagging threshold' ), array( $this, 'comment_flag_threshold' ), 'discussion', 'default' );
 			register_setting( 'discussion', $this->_plugin_prefix . '_threshold', array( $this, 'check_threshold' ) );
@@ -90,11 +93,13 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 */
 		public function frontend_init() {
 
-			if ( ! $this->is_enabled() )
+			if ( ! $this->is_enabled() ) {
 				return;
+			}
 
-			if ( ! $this->plugin_url )
+			if ( ! $this->plugin_url ) {
 				$this->plugin_url = plugins_url( false, __FILE__ );
+			}
 
 			do_action( 'safe_report_comments_frontend_init' );
 
@@ -103,8 +108,9 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'action_enqueue_scripts' ) );
 
-			if ( $this->_auto_init )
+			if ( $this->_auto_init ) {
 				add_filter( 'comment_reply_link', array( $this, 'add_flagging_link' ) );
+			}
 			add_action( 'comment_report_abuse_link', array( $this, 'print_flagging_link' ) );
 
 			add_action( 'template_redirect', array( $this, 'add_test_cookie' ) ); // need to do this at template_redirect because is_feed isn't available yet
@@ -113,10 +119,11 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		public function action_enqueue_scripts() {
 
 			// Use home_url() if domain mapped to avoid cross-domain issues
-			if ( home_url() != site_url() )
+			if ( home_url() != site_url() ) {
 				$ajaxurl = home_url( '/wp-admin/admin-ajax.php' );
-			else
+			} else {
 				$ajaxurl = admin_url( 'admin-ajax.php' );
+			}
 
 			$ajaxurl = apply_filters( 'safe_report_comments_ajax_url', $ajaxurl );
 
@@ -127,10 +134,11 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		public function add_test_cookie() {
 			//Set a cookie now to see if they are supported by the browser.
 			// Don't add cookie if it's already set; and don't do it for feeds
-			if( ! is_feed() && ! isset( $_COOKIE[ TEST_COOKIE ] ) ) {
+			if ( ! is_feed() && ! isset( $_COOKIE[ TEST_COOKIE ] ) ) {
 				@setcookie(TEST_COOKIE, 'WP Cookie check', 0, COOKIEPATH, COOKIE_DOMAIN);
-				if ( SITECOOKIEPATH != COOKIEPATH )
+				if ( SITECOOKIEPATH != COOKIEPATH ) {
 					@setcookie(TEST_COOKIE, 'WP Cookie check', 0, SITECOOKIEPATH, COOKIE_DOMAIN);
+				}
 			}
 		}
 
@@ -208,10 +216,11 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 */
 		public function is_enabled() {
 			$enabled = get_option( $this->_plugin_prefix . '_enabled' );
-			if ( $enabled == 1 )
+			if ( $enabled == 1 ) {
 				$enabled = true;
-			else
+			} else {
 				$enabled = false;
+			}
 			return $enabled;
 		}
 
@@ -219,8 +228,9 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 * Validate threshold, callback for settings field
 		 */
 		public function check_threshold( $value ) {
-			if ( (int) $value <= 0 || (int) $value > 100 )
+			if ( (int) $value <= 0 || (int) $value > 100 ) {
 				$this->add_admin_notice( __('Please revise your flagging threshold and enter a number between 1 and 100') );
+			}
 			return (int) $value;
 		}
 
@@ -268,7 +278,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		public function already_flagged( $comment_id ) {
 
 			// check if cookies are enabled and use cookie store
-			if( isset( $_COOKIE[ TEST_COOKIE ] ) ) {
+			if ( isset( $_COOKIE[ TEST_COOKIE ] ) ) {
 				if ( isset( $_COOKIE[ $this->_storagecookie ] ) ) {
 					$data = $this->unserialize_cookie( $_COOKIE[ $this->_storagecookie ] );
 					if ( is_array( $data ) && isset( $data[ $comment_id ] ) ) {
@@ -297,24 +307,28 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 */
 		public function mark_flagged( $comment_id ) {
 			$data = array();
-			if( isset( $_COOKIE[ TEST_COOKIE ] ) ) {
+			if ( isset( $_COOKIE[ TEST_COOKIE ] ) ) {
 				if ( isset( $_COOKIE[ $this->_storagecookie ] ) ) {
 					$data = $this->unserialize_cookie( $_COOKIE[ $this->_storagecookie ] );
-					if ( ! isset( $data[ $comment_id ] ) )
+					if ( ! isset( $data[ $comment_id ] ) ) {
 						$data[ $comment_id ] = 0;
+					}
 					$data[ $comment_id ]++;
 					$cookie = $this->serialize_cookie( $data );
 					@setcookie( $this->_storagecookie, $cookie, time()+$this->cookie_lifetime, COOKIEPATH, COOKIE_DOMAIN );
-					if ( SITECOOKIEPATH != COOKIEPATH )
+					if ( SITECOOKIEPATH != COOKIEPATH ) {
 						@setcookie( $this->_storagecookie, $cookie, time()+$this->cookie_lifetime, SITECOOKIEPATH, COOKIE_DOMAIN);
+					}
 				} else {
-					if ( ! isset( $data[ $comment_id ] ) )
+					if ( ! isset( $data[ $comment_id ] ) ) {
 						$data[ $comment_id ] = 0;
+					}
 					$data[ $comment_id ]++;
 					$cookie = $this->serialize_cookie( $data );
 					@setcookie( $this->_storagecookie, $cookie, time()+$this->cookie_lifetime, COOKIEPATH, COOKIE_DOMAIN );
-					if ( SITECOOKIEPATH != COOKIEPATH )
+					if ( SITECOOKIEPATH != COOKIEPATH ) {
 						@setcookie( $this->_storagecookie, $cookie, time()+$this->cookie_lifetime, SITECOOKIEPATH, COOKIE_DOMAIN);
+					}
 				}
 			}
 			// in case we don't have cookies. fall back to transients, block based on IP, shorter timeout to keep mem usage low and don't lock out whole companies
@@ -338,8 +352,9 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 			$already_moderated = get_comment_meta( $comment_id, $this->_plugin_prefix . '_moderated', true );
 			if ( true == $already_reported && true == $already_moderated ) {
 				// But maybe the boss wants to allow comments to be reflagged
-				if ( ! apply_filters( 'safe_report_comments_allow_moderated_to_be_reflagged', false ) )
+				if ( ! apply_filters( 'safe_report_comments_allow_moderated_to_be_reflagged', false ) ) {
 					return;
+				}
 			}
 
 			if ( $current_reports >= $threshold ) {
@@ -352,28 +367,31 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 * Die() with or without screen based on JS availability
 		 */
 		private function cond_die( $message ) {
-			if ( isset( $_REQUEST['no_js'] ) && true == (boolean) $_REQUEST['no_js'] )
+			if ( isset( $_REQUEST['no_js'] ) && true == (boolean) $_REQUEST['no_js'] ) {
 				wp_die( esc_html( $message ), esc_html("Safe Report Comments Notice"), array('response' => 200 ) );
-			else
+			} else {
 				die( esc_html( $message ) );
+			}
 		}
 
 		/*
 		 * Ajax callback to flag/report a comment
 		 */
 		public function flag_comment() {
-			if ( (int) $_REQUEST[ 'comment_id' ] != $_REQUEST[ 'comment_id' ] || empty( $_REQUEST[ 'comment_id' ] ) )
+			if ( (int) $_REQUEST[ 'comment_id' ] != $_REQUEST[ 'comment_id' ] || empty( $_REQUEST[ 'comment_id' ] ) ) {
 				$this->cond_die( __( $this->invalid_values_message ) );
+			}
 
 			$comment_id = (int) $_REQUEST[ 'comment_id' ];
-			if ( $this->already_flagged( $comment_id ) )
+			if ( $this->already_flagged( $comment_id ) ) {
 				$this->cond_die( __( $this->already_flagged_message ) );
+			}
 
 			$nonce = $_REQUEST[ 'sc_nonce' ];
 			// checking if nonces help
-			if ( ! wp_verify_nonce( $nonce, $this->_plugin_prefix . '_' . $this->_nonce_key ) )
+			if ( ! wp_verify_nonce( $nonce, $this->_plugin_prefix . '_' . $this->_nonce_key ) ) {
 				$this->cond_die( __( $this->invalid_nonce_message ) );
-			else {
+			} else {
 				$this->mark_flagged( $comment_id );
 				$this->cond_die( __( $this->thank_you_message ) );
 			}
@@ -402,23 +420,25 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 					return __( 'This comment does not exist.' );
 				}
 			}
-			if ( empty( $result_id ) )
+			if ( empty( $result_id ) ) {
 				$result_id = 'safe-comments-result-' . $comment_id;
+			}
 
 			$result_id = apply_filters( 'safe_report_comments_result_id', $result_id );
 			$text = apply_filters( 'safe_report_comments_flagging_link_text', $text );
 
 			$nonce = wp_create_nonce( $this->_plugin_prefix . '_' . $this->_nonce_key );
 			$params = array(
-							'action' => 'safe_report_comments_flag_comment',
-							'sc_nonce' => $nonce,
-							'comment_id' => $comment_id,
-							'result_id' => $result_id,
-							'no_js' => true,
+				'action'     => 'safe_report_comments_flag_comment',
+				'sc_nonce'   => $nonce,
+				'comment_id' => $comment_id,
+				'result_id'  => $result_id,
+				'no_js'      => true,
 			);
 
-			if ( $this->already_flagged( $comment_id ) )
+			if ( $this->already_flagged( $comment_id ) ) {
 				return __( $this->already_flagged_note );
+			}
 
 			return apply_filters( 'safe_report_comments_flagging_link', '
 			<span id="' . esc_attr( $result_id ) . '"><a class="hide-if-no-js" href="javascript:void(0);" onclick="safe_report_comments_flag_comment( \'' . intval( $comment_id ) . '\', \'' . esc_js($nonce) . '\', \'' . esc_js( $result_id ) . '\');">' . esc_html( $text ) . '</a></span>' );
@@ -432,8 +452,9 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 * with $safe_report_comments = new Safe_Report_Comments( $auto_init = false );
 		 */
 		public function add_flagging_link( $comment_reply_link ) {
-			if ( !preg_match_all( '#^(.*)(<a.+class=["|\']comment-(reply|login)-link["|\'][^>]+>)(.+)(</a>)(.*)$#msiU', $comment_reply_link, $matches ) )
+			if ( !preg_match_all( '#^(.*)(<a.+class=["|\']comment-(reply|login)-link["|\'][^>]+>)(.+)(</a>)(.*)$#msiU', $comment_reply_link, $matches ) ) {
 				return '<!-- safe-comments add_flagging_link not matching -->' . $comment_reply_link;
+			}
 
 			$comment_reply_link =  $matches[1][0] . $matches[2][0] . $matches[4][0] . $matches[5][0] . '<span class="safe-comments-report-link">' . $this->get_flagging_link() . '</span>' . $matches[6][0];
 			return apply_filters( 'safe_report_comments_comment_reply_link', $comment_reply_link );
@@ -452,22 +473,22 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 */
 		public function manage_comment_reported_column( $column_name, $comment_id ) {
 			switch ( $column_name ) {
-			case 'comment_reported':
-				$reports = 0;
-				$already_reported = get_comment_meta( $comment_id, $this->_plugin_prefix . '_reported', true );
-				if ( $already_reported > 0 )
-					$reports = (int) $already_reported;
-				echo esc_html( $reports );
-				break;
-			default:
-				break;
+				case 'comment_reported':
+					$reports = 0;
+					$already_reported = get_comment_meta( $comment_id, $this->_plugin_prefix . '_reported', true );
+					if ( $already_reported > 0 ) {
+						$reports = (int) $already_reported;
+					}
+					echo esc_html( $reports );
+					break;
+				default:
+					break;
 			}
 		}
 
 	}
 }
 
-if ( !defined( 'no_autostart_safe_report_comments' ) )
+if ( !defined( 'no_autostart_safe_report_comments' ) ) {
 	$safe_report_comments = new Safe_Report_Comments;
-
-?>
+}

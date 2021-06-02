@@ -8,6 +8,7 @@
  * Version: 0.4.1
  * Author: Thorsten Ott, Daniel Bachhuber, Automattic
  * Author URI: http://automattic.com
+ * License: GPLv2
  *
  * @phpcs:disable WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
  * @phpcs:disable WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE

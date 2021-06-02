@@ -1,14 +1,17 @@
 <?php
-/*
-Plugin Name: Safe Report Comments
-Plugin Script: safe-report-comments.php
-Plugin URI: http://wordpress.org/extend/plugins/safe-report-comments/
-Description: This script gives visitors the possibility to flag/report a comment as inapproriate.
-After reaching a threshold the comment is moved to moderation. If a comment is approved once by a moderator future reports will be ignored.
-Version: 0.4.1
-Author: Thorsten Ott, Daniel Bachhuber, Automattic
-Author URI: http://automattic.com
-*/
+/**
+ * Plugin Name: Safe Report Comments
+ * Plugin Script: safe-report-comments.php
+ * Plugin URI: http://wordpress.org/extend/plugins/safe-report-comments/
+ * Description: This script gives visitors the possibility to flag/report a comment as inapproriate.
+ * After reaching a threshold the comment is moved to moderation. If a comment is approved once by a moderator future reports will be ignored.
+ * Version: 0.4.1
+ * Author: Thorsten Ott, Daniel Bachhuber, Automattic
+ * Author URI: http://automattic.com
+ *
+ * @phpcs:disable WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+ * @phpcs:disable WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+ */
 
 if ( !class_exists( "Safe_Report_Comments" ) ) {
 
@@ -287,9 +290,12 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 				}
 			}
 
+			// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
+			$remote_addr = filter_var( $_SERVER['REMOTE_ADDR'] ?? '', 'FILTER_VALIDATE_IP' );
+			$remote_addr = sanitize_text_field( $remote_addr );
 
 			// in case we don't have cookies. fall back to transients, block based on IP/User Agent
-			if ( $transient = get_transient( md5( $this->_storagecookie . $_SERVER['REMOTE_ADDR'] ) ) ) {
+			if ( $transient = get_transient( md5( $this->_storagecookie . $remote_addr ) ) ) {
 				if 	(
 					// check if no cookie and transient is set
 					 ( !isset( $_COOKIE[ TEST_COOKIE ] ) && isset( $transient[ $comment_id ] ) ) ||
@@ -331,13 +337,18 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 					}
 				}
 			}
+
+			// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
+			$remote_addr = filter_var( $_SERVER['REMOTE_ADDR'] ?? '', 'FILTER_VALIDATE_IP' );
+			$remote_addr = sanitize_text_field( $remote_addr );
+
 			// in case we don't have cookies. fall back to transients, block based on IP, shorter timeout to keep mem usage low and don't lock out whole companies
-			$transient = get_transient( md5( $this->_storagecookie . $_SERVER['REMOTE_ADDR'] ) );
+			$transient = get_transient( md5( $this->_storagecookie . $remote_addr ) );
 			if ( !$transient ) {
-				set_transient( md5( $this->_storagecookie . $_SERVER['REMOTE_ADDR'] ), array( $comment_id => 1), $this->transient_lifetime );
+				set_transient( md5( $this->_storagecookie . $remote_addr ), array( $comment_id => 1), $this->transient_lifetime );
 			} else {
 				$transient[ $comment_id ]++;
-				set_transient( md5( $this->_storagecookie . $_SERVER['REMOTE_ADDR'] ), $transient, $this->transient_lifetime );
+				set_transient( md5( $this->_storagecookie . $remote_addr ), $transient, $this->transient_lifetime );
 			}
 
 
@@ -378,7 +389,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 * Ajax callback to flag/report a comment
 		 */
 		public function flag_comment() {
-			if ( (int) $_REQUEST[ 'comment_id' ] != $_REQUEST[ 'comment_id' ] || empty( $_REQUEST[ 'comment_id' ] ) ) {
+			if ( ! isset( $_REQUEST[ 'comment_id' ] ) || empty( $_REQUEST[ 'comment_id' ] ) || (int) $_REQUEST[ 'comment_id' ] != $_REQUEST[ 'comment_id' ] ) {
 				$this->cond_die( __( $this->invalid_values_message ) );
 			}
 
@@ -387,9 +398,8 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 				$this->cond_die( __( $this->already_flagged_message ) );
 			}
 
-			$nonce = $_REQUEST[ 'sc_nonce' ];
 			// checking if nonces help
-			if ( ! wp_verify_nonce( $nonce, $this->_plugin_prefix . '_' . $this->_nonce_key ) ) {
+			if ( ! isset( $_REQUEST[ 'sc_nonce' ] ) || ! wp_verify_nonce( $_REQUEST[ 'sc_nonce' ], $this->_plugin_prefix . '_' . $this->_nonce_key ) ) {
 				$this->cond_die( __( $this->invalid_nonce_message ) );
 			} else {
 				$this->mark_flagged( $comment_id );

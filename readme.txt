@@ -5,11 +5,13 @@ Requires at least: 3.3
 Tested up to: 5.0
 Stable tag: 0.4.1
 
-This plugin gives your visitors the possibility to report a comment as inappropriate. After a set threshold is reached the comment is put into moderation where the moderator can decide whether or not he want to approve the comment or not. If a comment is approved by a moderator it will not be auto-moderated again while still counting the amount of reports. 
+This plugin gives your visitors the possibility to report a comment as inappropriate. After a set threshold is reached the comment is put into moderation where the moderator can decide whether or not he want to approve the comment or not. If a comment is approved by a moderator it will not be auto-moderated again while still counting the amount of reports.
 
 == Description ==
 
-This plugin gives your visitors the possibility to report a comment as inappropriate. After a set threshold is reached the comment is put into moderation where the moderator can decide whether or not he want to approve the comment or not. If a comment is approved by a moderator it will not be auto-moderated again while still counting the amount of reports. 
+This plugin gives your visitors the possibility to report a comment as inappropriate. After a set threshold is reached the comment is put into moderation where the moderator can decide whether or not he want to approve the comment or not. If a comment is approved by a moderator it will not be auto-moderated again while still counting the amount of reports.
+
+Requires PHP7+
 
 == Installation ==
 
@@ -28,7 +30,7 @@ This plugin gives your visitors the possibility to report a comment as inappropr
 
 == Changelog ==
 
-= 0.4.1 (July 23, 2014) = 
+= 0.4.1 (July 23, 2014) =
 
 * Typo fix, props spencermorin
 
@@ -50,7 +52,7 @@ This plugin gives your visitors the possibility to report a comment as inappropr
 By default this script should hook in just fine in most existing themes as it attaches itsself after the comment-reply link via the comment_reply_link filter.
 In case this does not work out you can place the flagging link manually by defining no_autostart_safe_report_comments in your themes' functions.php file and initializing the class via ``$safe_report_comments = new Safe_Report_Comments(false);``.
 
-Here is an example of a custom setup via functions.php and placing the link comments callback function. 
+Here is an example of a custom setup via functions.php and placing the link comments callback function.
 
 In functions.php:
 `
@@ -75,7 +77,7 @@ function adjust_flagging_text( $text ) {
 
 In your custom comment callback function used by wp_list_comments: http://codex.wordpress.org/Template_Tags/wp_list_comments place the following action which will print the link.
 
-`<?php do_action( 'comment_report_abuse_link' ); ?>` 
+`<?php do_action( 'comment_report_abuse_link' ); ?>`
 
 A possible callback function could look like this:
 `
@@ -111,4 +113,4 @@ Furthermore there are various actions and filters within the script to allow eas
 == Known issues ==
 
 Automatic mode implementation currently does not work with threaded comments in the last level of threading. As the script attaches itself to the comment_reply which is not displayed once the maximum threading level is reached the abuse link is missing at this point. As a workaround set the threading level higher than the likely amount of threading depth.
- 
+

@@ -348,8 +348,9 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 			if ( !$transient ) {
 				set_transient( md5( $this->_storagecookie . $remote_addr ), array( $comment_id => 1), $this->transient_lifetime );
 			} else {
-				if ( ! isset( $transient[ $comment_id ] ) )
+				if ( ! isset( $transient[ $comment_id ] ) ) {
 					$transient[ $comment_id ] = 0;
+				}
 				$transient[ $comment_id ]++;
 				set_transient( md5( $this->_storagecookie . $remote_addr ), $transient, $this->transient_lifetime );
 			}

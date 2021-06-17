@@ -44,7 +44,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		public function __construct( $auto_init=true ) {
 
 			$this->_admin_notices = get_transient( $this->_plugin_prefix . '_notices' );
-			if ( !is_array( $this->_admin_notices ) ) {
+			if ( ! is_array( $this->_admin_notices ) ) {
 				$this->_admin_notices = array();
 			}
 			$this->_admin_notices = array_unique( $this->_admin_notices );
@@ -59,7 +59,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 
 			// apply some filters to easily alter the frontend messages
 			// add_filter( 'safe_report_comments_thank_you_message', 'alter_message' ); // this or similar will do the job
-			foreach( $this->filter_vars as $var ) {
+			foreach ( $this->filter_vars as $var ) {
 				$this->{$var} = apply_filters( 'safe_report_comments_' . $var , $this->{$var} );
 			}
 		}

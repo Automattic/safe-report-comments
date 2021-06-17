@@ -291,8 +291,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 				}
 			}
 
-			// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
-			$remote_addr = filter_var( isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '', 'FILTER_VALIDATE_IP' );
+			$remote_addr = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
 			$remote_addr = sanitize_text_field( $remote_addr );
 
 			// in case we don't have cookies. fall back to transients, block based on IP/User Agent
@@ -339,8 +338,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 				}
 			}
 
-			// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
-			$remote_addr = filter_var( isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '', 'FILTER_VALIDATE_IP' );
+			$remote_addr = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
 			$remote_addr = sanitize_text_field( $remote_addr );
 
 			// in case we don't have cookies. fall back to transients, block based on IP, shorter timeout to keep mem usage low and don't lock out whole companies
@@ -393,7 +391,7 @@ if ( !class_exists( "Safe_Report_Comments" ) ) {
 		 * Ajax callback to flag/report a comment
 		 */
 		public function flag_comment() {
-			if ( ! isset( $_REQUEST[ 'comment_id' ] ) || empty( $_REQUEST[ 'comment_id' ] ) || (int) $_REQUEST[ 'comment_id' ] != $_REQUEST[ 'comment_id' ] ) {
+			if ( empty( $_REQUEST[ 'comment_id' ] ) || (int) $_REQUEST[ 'comment_id' ] != $_REQUEST[ 'comment_id' ] ) {
 				$this->cond_die( __( $this->invalid_values_message ) );
 			}
 

@@ -26,7 +26,7 @@
 	},
 	"scripts": {
 		"cbf": [
-			"@php ./vendor/bin/phpcbf -p -s -v -n . --standard=\"WordPress-VIP-Go\" --extensions=php --ignore=\"/vendor/*,/node_modules/*,/tests/*\""
+			"@php ./vendor/bin/phpcbf"
 		],
 		"coverage": [
 			"@php ./vendor/bin/phpunit --coverage-html ./build/coverage-html"
@@ -35,7 +35,7 @@
 			"@php ./vendor/bin/phpunit"
 		],
 		"cs": [
-			"@php ./vendor/bin/phpcs -p -s -v -n . --standard=\"WordPress-VIP-Go\" --extensions=php --ignore=\"/vendor/*,/node_modules/*,/tests/*\""
+			"@php ./vendor/bin/phpcs"
 		],
 		"lint": [
 			"@php ./vendor/php-parallel-lint/php-parallel-lint/parallel-lint . -e php --exclude vendor --exclude .git"

@@ -448,7 +448,6 @@ class Safe_Report_Comments {
 		$data = array();
 		if ( isset( $_COOKIE[ TEST_COOKIE ] ) ) {
 			if ( isset( $_COOKIE[ $this->storagecookie ] ) ) {
-
 				$data = $this->unserialize_cookie( sanitize_text_field( $_COOKIE[ $this->storagecookie ] ) );
 				if ( ! isset( $data[ $comment_id ] ) ) {
 					$data[ $comment_id ] = 0;

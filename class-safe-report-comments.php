@@ -74,28 +74,28 @@ class Safe_Report_Comments {
 	 *
 	 * @var string
 	 */
-	public $invalid_nonce_message = 'It seems you already reported this comment. <!-- nonce invalid -->';
+	public $invalid_nonce_message = 'It seems you already reported this comment.';
 
 	/**
 	 * Message shown after flagging if comment ID is invalid.
 	 *
 	 * @var string
 	 */
-	public $invalid_values_message = 'Cheating huh? <!-- invalid values -->';
+	public $invalid_values_message = 'Cheating huh?';
 
 	/**
 	 * Message shown after flagging if comment has already been flagged by user.
 	 *
 	 * @var string
 	 */
-	public $already_flagged_message = 'It seems you already reported this comment. <!-- already flagged -->';
+	public $already_flagged_message = 'It seems you already reported this comment.';
 
 	/**
 	 * Message shown before flagging if comment has already been flagged by user.
 	 *
 	 * @var string
 	 */
-	public $already_flagged_note = '<!-- already flagged -->'; // displayed instead of the report link when a comment was flagged.
+	public $already_flagged_note = ''; // displayed instead of the report link when a comment was flagged.
 
 	/**
 	 * Variable names for various messages
@@ -235,8 +235,7 @@ class Safe_Report_Comments {
 
 		$ajaxurl = apply_filters( 'safe_report_comments_ajax_url', $ajaxurl );
 
-		// @todo Confirm if this script can be loaded in the footer.
-		wp_enqueue_script( $this->plugin_prefix . '-ajax-request', $this->plugin_url . '/js/ajax.js', array( 'jquery' ), '1.0', false );
+		wp_enqueue_script( $this->plugin_prefix . '-ajax-request', $this->plugin_url . '/js/ajax.js', array( 'jquery' ), '1.0', true );
 		wp_localize_script( $this->plugin_prefix . '-ajax-request', 'SafeCommentsAjax', array( 'ajaxurl' => $ajaxurl ) ); // slightly dirty but needed due to possible problems with mapped domains.
 	}
 
@@ -449,6 +448,7 @@ class Safe_Report_Comments {
 		$data = array();
 		if ( isset( $_COOKIE[ TEST_COOKIE ] ) ) {
 			if ( isset( $_COOKIE[ $this->storagecookie ] ) ) {
+
 				$data = $this->unserialize_cookie( sanitize_text_field( $_COOKIE[ $this->storagecookie ] ) );
 				if ( ! isset( $data[ $comment_id ] ) ) {
 					$data[ $comment_id ] = 0;

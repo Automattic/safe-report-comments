@@ -1,8 +1,9 @@
-[![Run PHPUnit and PHPCS](https://github.com/Automattic/safe-report-comments/actions/workflows/integrate.yml/badge.svg)](https://github.com/Automattic/safe-report-comments/actions/workflows/integrate.yml)
+[![CS & Lint](https://github.com/Automattic/safe-report-comments/actions/workflows/cs-lint.yml/badge.svg)](https://github.com/Automattic/safe-report-comments/actions/workflows/cs-lint.yml)
+[![Run PHPUnit](https://github.com/Automattic/safe-report-comments/actions/workflows/integrations.yml/badge.svg)](https://github.com/Automattic/safe-report-comments/actions/workflows/integrations.yml)
 
 # Safe Report Comments
 
-This plugin gives your visitors the possibility to report a comment as inappropriate. After a set threshold is reached the comment is put into moderation where the moderator can decide whether or not he want to approve the comment or not. If a comment is approved by a moderator it will not be auto-moderated again while still counting the amount of reports.
+This plugin gives your visitors the possibility to report a comment as inappropriate. After a set threshold is reached the comment is put into moderation where the moderator can decide whether to approve it. If a comment is approved by a moderator it will not be auto-moderated again while still counting the amount of reports.
 
 ## Installation
 
@@ -14,13 +15,13 @@ This plugin gives your visitors the possibility to report a comment as inappropr
 
 ## Screenshots
 
-![Simple activation via discussion settings](screenshot-1.png)
+![Simple activation via discussion settings](.wordpress-org/screenshot-1.png)
 
-![Amount of reports per comment is shown in comments administration screen](screenshot-2.png)
+![Amount of reports per comment is shown in comments administration screen](.wordpress-org/screenshot-2.png)
 
-![Fits well within most themes without any further action.](screenshot-3.png)
+![Fits well within most themes without any further action.](.wordpress-org/screenshot-3.png)
 
-![Ajax feedback right in place where available.](screenshot-4.png)
+![Ajax feedback right in place where available.](.wordpress-org/screenshot-4.png)
 
 
 ## Changelog

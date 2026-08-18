@@ -1,19 +1,38 @@
 name: CS & Lint
 
 on:
-  # Run on all pushes and on all pull requests.
-  # Prevent the "push" build from running when there are only irrelevant changes.
   push:
-    paths-ignore:
-      - "**.md"
+    paths:
+      - "**.php"
+      - "composer.json"
+      - "composer.lock"
+      - ".phpcs.xml.dist"
+      - "phpunit.xml.dist"
+      - ".github/workflows/cs-lint.yml"
   pull_request:
+    paths:
+      - "**.php"
+      - "composer.json"
+      - "composer.lock"
+      - ".phpcs.xml.dist"
+      - "phpunit.xml.dist"
+      - ".github/workflows/cs-lint.yml"
   # Allow manually triggering the workflow.
   workflow_dispatch:
+
+# Disable all permissions by default; grant the minimum needed per job.
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   checkcs:
     name: "Basic CS and QA checks"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     env:
       XMLLINT_INDENT: "	"
@@ -37,7 +56,9 @@ jobs:
         uses: korelstar/xmllint-problem-matcher@1bd292d642ddf3d369d02aaa8b262834d61198c0 # v1.2.0
 
       - name: Checkout code
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       # Validate the composer.json file.
       # @link https://getcomposer.org/doc/03-cli.md#validate
@@ -62,9 +83,10 @@ jobs:
           xml-schema-file: ./vendor/phpunit/phpunit/phpunit.xsd
 
       # Check the code-style consistency of the PHP files.
-#      - name: Check PHP code style
-#        continue-on-error: true
-#        run: vendor/bin/phpcs --report-full --report-checkstyle=./phpcs-report.xml
-
-#      - name: Show PHPCS results in PR
-#        run: cs2pr ./phpcs-report.xml
+      # Temporarily disabled: the plugin carries a backlog of pre-existing WPCS 3.x
+      # violations (see PR #13). Re-enable this gate once that cleanup has landed.
+      # - name: Check PHP code style
+      #   run: composer cs -- --report-full --report-checkstyle=./phpcs-report.xml
+      #
+      # - name: Show PHPCS results in PR
+      #   run: cs2pr ./phpcs-report.xml

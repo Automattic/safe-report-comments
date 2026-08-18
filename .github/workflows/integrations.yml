@@ -68,7 +68,9 @@ jobs:
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@994bb194a4fefcf39449ccf0f7766a4318f1ac76 # v1
+        uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
+        with:
+          composer-options: "--prefer-dist --no-progress"
 
       - name: Start MySQL service
         run: sudo systemctl start mysql.service

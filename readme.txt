@@ -1,15 +1,18 @@
 === Safe Report Comments ===
 Contributors: tott, danielbachhuber, automattic
-Tags: flagging, flag, comments, report comments, report, inappropriate, spam
-Requires at least: 3.3
-Tested up to: 5.0
+Tags: flagging, comments, report comments, inappropriate, spam
+Requires at least: 6.4
+Tested up to: 7.0
+Requires PHP: 7.4
 Stable tag: 0.4.1
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-This plugin gives your visitors the possibility to report a comment as inappropriate. After a set threshold is reached the comment is put into moderation where the moderator can decide whether or not he want to approve the comment or not. If a comment is approved by a moderator it will not be auto-moderated again while still counting the amount of reports. 
+This plugin gives your visitors the possibility to report a comment as inappropriate. After a set threshold is reached the comment is put into moderation where the moderator can decide whether to approve it. If a comment is approved by a moderator it will not be auto-moderated again while still counting the amount of reports. 
 
 == Description ==
 
-This plugin gives your visitors the possibility to report a comment as inappropriate. After a set threshold is reached the comment is put into moderation where the moderator can decide whether or not he want to approve the comment or not. If a comment is approved by a moderator it will not be auto-moderated again while still counting the amount of reports. 
+This plugin gives your visitors the possibility to report a comment as inappropriate. After a set threshold is reached the comment is put into moderation where the moderator can decide whether to approve it. If a comment is approved by a moderator it will not be auto-moderated again while still counting the amount of reports. 
 
 == Installation ==
 

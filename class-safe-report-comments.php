@@ -364,7 +364,10 @@ class Safe_Report_Comments {
 	 * @return array Decoded cookie data.
 	 */
 	private function unserialize_cookie( $value ) {
-		$data = json_decode( base64_decode( $value ) );
+		// Decode as an associative array. Without the `true` flag, json_decode()
+		// returns a stdClass, which clean_cookie_data()'s is_array() check then
+		// discards, so a flagged comment is never recognised. See #15.
+		$data = json_decode( base64_decode( $value ), true );
 		return $this->clean_cookie_data( $data );
 	}
 

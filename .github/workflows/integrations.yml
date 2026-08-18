@@ -73,6 +73,11 @@ jobs:
       - name: Start MySQL service
         run: sudo systemctl start mysql.service
 
+      # The WordPress test suite is fetched over Subversion, which is no longer
+      # preinstalled on ubuntu-latest.
+      - name: Install Subversion
+        run: sudo apt-get update && sudo apt-get install --yes subversion
+
       - name: Prepare environment for integration tests
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 ${{ matrix.wordpress }}
 

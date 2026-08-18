@@ -455,7 +455,7 @@ class Safe_Report_Comments {
 				if ( ! isset( $data[ $comment_id ] ) ) {
 					$data[ $comment_id ] = 0;
 				}
-				$data[ $comment_id ]++;
+				++$data[ $comment_id ];
 				$cookie = $this->serialize_cookie( $data );
 				@setcookie( $this->storagecookie, $cookie, time() + $this->cookie_lifetime, COOKIEPATH, COOKIE_DOMAIN );
 				if ( SITECOOKIEPATH != COOKIEPATH ) {
@@ -465,7 +465,7 @@ class Safe_Report_Comments {
 				if ( ! isset( $data[ $comment_id ] ) ) {
 					$data[ $comment_id ] = 0;
 				}
-				$data[ $comment_id ]++;
+				++$data[ $comment_id ];
 				$cookie = $this->serialize_cookie( $data );
 				@setcookie( $this->storagecookie, $cookie, time() + $this->cookie_lifetime, COOKIEPATH, COOKIE_DOMAIN );
 				if ( SITECOOKIEPATH != COOKIEPATH ) {
@@ -485,14 +485,14 @@ class Safe_Report_Comments {
 			if ( ! isset( $transient[ $comment_id ] ) ) {
 				$transient[ $comment_id ] = 0;
 			}
-			$transient[ $comment_id ]++;
+			++$transient[ $comment_id ];
 			set_transient( md5( $this->storagecookie . $remote_addr ), $transient, $this->transient_lifetime );
 		}
 
 
 		$threshold       = (int) get_option( $this->plugin_prefix . '_threshold' );
 		$current_reports = get_comment_meta( $comment_id, $this->plugin_prefix . '_reported', true );
-		$current_reports++;
+		++$current_reports;
 		update_comment_meta( $comment_id, $this->plugin_prefix . '_reported', $current_reports );
 
 
@@ -658,5 +658,4 @@ class Safe_Report_Comments {
 				break;
 		}
 	}
-
 }

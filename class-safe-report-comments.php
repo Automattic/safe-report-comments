@@ -507,8 +507,13 @@ class Safe_Report_Comments {
 		}
 
 		if ( $current_reports >= $threshold ) {
-			do_action( 'safe_report_comments_mark_flagged', $comment_id );
-			wp_set_comment_status( $comment_id, 'hold' );
+			// Only pull the comment into the moderation queue if it is currently approved.
+			// Comments already in spam or trash have been dealt with, so reporting them
+			// should not resurrect them back into the moderation queue.
+			if ( 'approved' === wp_get_comment_status( $comment_id ) ) {
+				do_action( 'safe_report_comments_mark_flagged', $comment_id );
+				wp_set_comment_status( $comment_id, 'hold' );
+			}
 		}
 	}
 

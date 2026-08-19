@@ -23,7 +23,6 @@
 /composer.json                   export-ignore
 /composer.lock                   export-ignore
 /phpunit.xml.dist                export-ignore
-/readme.md                       export-ignore
 
 # Auto detect text files and perform LF normalization
 # https://pablorsk.medium.com/be-a-git-ninja-the-gitattributes-file-e58c07c9e915

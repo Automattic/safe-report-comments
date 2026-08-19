@@ -214,7 +214,7 @@ class Safe_Report_Comments {
 		add_action( 'wp_enqueue_scripts', array( $this, 'action_enqueue_scripts' ) );
 
 		if ( $this->auto_init ) {
-			add_filter( 'comment_reply_link', array( $this, 'add_flagging_link' ) );
+			add_filter( 'comment_text', array( $this, 'append_flagging_link' ), 100, 2 );
 		}
 		add_action( 'comment_report_abuse_link', array( $this, 'print_flagging_link' ) );
 
@@ -235,7 +235,7 @@ class Safe_Report_Comments {
 
 		$ajaxurl = apply_filters( 'safe_report_comments_ajax_url', $ajaxurl );
 
-		wp_enqueue_script( $this->plugin_prefix . '-ajax-request', $this->plugin_url . '/js/ajax.js', array( 'jquery' ), '1.0', true );
+		wp_enqueue_script( $this->plugin_prefix . '-ajax-request', $this->plugin_url . '/js/ajax.js', array( 'jquery' ), '2.0', true );
 		wp_localize_script( $this->plugin_prefix . '-ajax-request', 'SafeCommentsAjax', array( 'ajaxurl' => $ajaxurl ) ); // slightly dirty but needed due to possible problems with mapped domains.
 	}
 
@@ -650,20 +650,55 @@ class Safe_Report_Comments {
 	}
 
 	/**
-	 * Callback function to automatically hook in the report link after the comment reply link.
-	 * If you want to control the placement on your own define no_autostart_safe_report_comments in your functions.php file and initialize the class
-	 * with $safe_report_comments = new Safe_Report_Comments( $auto_init = false );
+	 * Append the report link to a comment so the bundled script can position it.
 	 *
-	 * @param string $comment_reply_link Comment reply link markup.
-	 * @return string Modified comment reply link markup.
+	 * Registered on the `comment_text` filter in automatic mode. The previous approach
+	 * parsed the theme-rendered reply-link markup with a regular expression and injected
+	 * the report link into it. That broke whenever a theme altered the reply link, for
+	 * example Twenty Twenty prepends a `do-not-scroll` class, which stopped the pattern
+	 * from matching and silently dropped the link.
+	 *
+	 * Instead the link is rendered at the end of the comment and moved next to the reply
+	 * link on the client, keyed off the reply link's core `data-commentid` attribute, so
+	 * placement no longer depends on any particular markup. This works for both classic
+	 * (`wp_list_comments()`) and block themes, and reaches comments at the maximum
+	 * threading depth, which have no reply link for the old approach to target.
+	 *
+	 * To place the link yourself, disable automatic mode (see the `no_autostart_safe_report_comments`
+	 * constant) and call `do_action( 'comment_report_abuse_link' )` in your comment template.
+	 *
+	 * @param string          $comment_text Text of the current comment.
+	 * @param WP_Comment|null $comment      The current comment object, when provided.
+	 * @return string Comment text, with the report link appended for reportable comments.
 	 */
-	public function add_flagging_link( $comment_reply_link ) {
-		if ( ! preg_match_all( '#^(.*)(<a.+class=["|\']comment-(reply|login)-link["|\'][^>]+>)(.+)(</a>)(.*)$#msiU', $comment_reply_link, $matches ) ) {
-			return '<!-- safe-comments add_flagging_link not matching -->' . $comment_reply_link;
+	public function append_flagging_link( $comment_text, $comment = null ) {
+		// Never add the link within feeds.
+		if ( is_feed() ) {
+			return $comment_text;
 		}
 
-		$comment_reply_link = $matches[1][0] . $matches[2][0] . $matches[4][0] . $matches[5][0] . '<span class="safe-comments-report-link">' . $this->get_flagging_link() . '</span>' . $matches[6][0];
-		return apply_filters( 'safe_report_comments_comment_reply_link', $comment_reply_link );
+		$comment_id = is_object( $comment ) ? (int) $comment->comment_ID : (int) get_comment_ID();
+
+		// Only ordinary public comments carry a report link, so skip pingbacks, order notes, etc.
+		if ( ! $comment_id || ! $this->is_reportable_comment( $comment_id ) ) {
+			return $comment_text;
+		}
+
+		$link = $this->get_flagging_link( $comment_id );
+
+		// Nothing to show; for example, the visitor has already reported this comment.
+		if ( '' === trim( $link ) ) {
+			return $comment_text;
+		}
+
+		// Hidden until the script positions and reveals it; reporting requires JavaScript.
+		$wrapper = sprintf(
+			'<span class="safe-comments-report-link" data-comment-id="%d" style="display:none;">%s</span>',
+			$comment_id,
+			$link
+		);
+
+		return $comment_text . $wrapper;
 	}
 
 	/**

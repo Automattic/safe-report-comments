@@ -527,6 +527,34 @@ class Safe_Report_Comments {
 	}
 
 	/**
+	 * Determine whether a comment may be reported through the public flagging workflow.
+	 *
+	 * The plugin only ever renders a report link for ordinary, publicly visible comments.
+	 * Other records share the comments table and the same numeric ID space, for example
+	 * WooCommerce order notes ( comment_type 'order_note' ), pingbacks and trackbacks.
+	 * Without this gate, any numeric comment ID accompanied by the global report nonce
+	 * could reach moderation, so the report target is validated before it is acted upon.
+	 *
+	 * @param int $comment_id The comment ID being reported.
+	 * @return bool Whether the comment exists and is an ordinary, reportable comment type.
+	 */
+	public function is_reportable_comment( $comment_id ) {
+		$comment = get_comment( $comment_id );
+
+		// Reject non-existent comments so arbitrary IDs cannot accrue report metadata.
+		if ( ! $comment ) {
+			return false;
+		}
+
+		// Only ordinary comments carry a report link. WordPress stores classic comments with
+		// an empty comment_type; 'comment' is accepted for forward compatibility.
+		$reportable_types = apply_filters( 'safe_report_comments_reportable_comment_types', array( '', 'comment' ) );
+		$is_reportable    = in_array( (string) $comment->comment_type, (array) $reportable_types, true );
+
+		return (bool) apply_filters( 'safe_report_comments_is_reportable_comment', $is_reportable, $comment );
+	}
+
+	/**
 	 * Ajax callback to flag/report a comment.
 	 *
 	 * @todo Confirm this callback only receives POST data
@@ -537,6 +565,12 @@ class Safe_Report_Comments {
 		}
 
 		$comment_id = (int) $_REQUEST['comment_id'];
+
+		// Only ordinary public comments carry a report link; refuse anything else, e.g. order notes.
+		if ( ! $this->is_reportable_comment( $comment_id ) ) {
+			$this->cond_die( $this->invalid_values_message );
+		}
+
 		if ( $this->already_flagged( $comment_id ) ) {
 			$this->cond_die( $this->already_flagged_message );
 		}

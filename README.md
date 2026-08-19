@@ -35,9 +35,11 @@ This plugin gives your visitors the possibility to report a comment as inappropr
 
 ## Customizations
 
-By default this plugin should hook into most existing themes without any changes, as it attaches itself after the comment reply link via the `comment_reply_link` filter.
+By default this plugin should work with most existing themes without any changes. It appends the flagging link to each comment and then, in the browser, moves it next to that comment's reply link. The reply link is located via its core `data-commentid` attribute, so placement does not depend on your theme's specific markup.
 
-If that does not work for your theme, you can place the flagging link manually. Define `no_autostart_safe_report_comments` in your theme's `functions.php` file and initialize the class with auto-attachment disabled: `$safe_report_comments = new Safe_Report_Comments( false );`.
+The report link ships unstyled and inherits your theme's link styles from wherever it appears, so it can look different next to a reply link than at the end of a comment (the deepest threading level, which has no reply link). To adjust or unify its appearance, target the `.safe-comments-report-link` class in your theme's CSS.
+
+If you would rather control the placement yourself, you can place the flagging link manually. Define `no_autostart_safe_report_comments` in your theme's `functions.php` file and initialize the class with auto-attachment disabled: `$safe_report_comments = new Safe_Report_Comments( false );`.
 
 Here is an example of a custom setup in `functions.php` that places the flagging link via a comment callback function.
 
@@ -101,9 +103,9 @@ function mytheme_comment( $comment, $args, $depth ) {
 
 There are various other actions and filters within the plugin that allow you to alter its behaviour. Please see the inline documentation for details.
 
-## Known issues
+## Notes
 
-Automatic mode implementation currently does not work with threaded comments in the last level of threading. As the plugin attaches itself to the comment reply link, which is not displayed once the maximum threading level is reached, the abuse link is missing at this point. As a workaround, set the threading level higher than the likely depth of your comment threads.
+At the maximum threading depth WordPress does not render a reply link, so in automatic mode the flagging link stays at the end of the comment rather than moving next to a reply link. The link still works as normal. Earlier versions attached to the reply link itself and so showed no flagging link at all at this depth.
 
 ## Changelog
 

@@ -19,7 +19,6 @@
 /composer.json
 /composer.lock
 /phpunit.xml.dist
-/readme.md
 
 # Caches and logs
 /.phpunit.cache/

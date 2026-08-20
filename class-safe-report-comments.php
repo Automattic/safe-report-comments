@@ -63,32 +63,39 @@ class Safe_Report_Comments {
 	/**
 	 * "Thank you" message after comment report.
 	 *
-	 * @todo Refactor messages so we can add i18n.
+	 * Translatable default is assigned on `init` via set_default_messages(),
+	 * because __() cannot be used in a property default and must not run before init.
 	 *
 	 * @var string
 	 */
-	public $thank_you_message = 'Thank you for your feedback. We will look into it.';
+	public $thank_you_message = '';
 
 	/**
 	 * Message shown after flagging if nonce is invalid.
 	 *
+	 * Translatable default is assigned on `init` via set_default_messages().
+	 *
 	 * @var string
 	 */
-	public $invalid_nonce_message = 'It seems you already reported this comment.';
+	public $invalid_nonce_message = '';
 
 	/**
 	 * Message shown after flagging if comment ID is invalid.
 	 *
+	 * Translatable default is assigned on `init` via set_default_messages().
+	 *
 	 * @var string
 	 */
-	public $invalid_values_message = 'Cheating huh?';
+	public $invalid_values_message = '';
 
 	/**
 	 * Message shown after flagging if comment has already been flagged by user.
 	 *
+	 * Translatable default is assigned on `init` via set_default_messages().
+	 *
 	 * @var string
 	 */
-	public $already_flagged_message = 'It seems you already reported this comment.';
+	public $already_flagged_message = '';
 
 	/**
 	 * Message shown before flagging if comment has already been flagged by user.
@@ -154,6 +161,31 @@ class Safe_Report_Comments {
 			add_action( 'admin_init', array( $this, 'backend_init' ) );
 		}
 		add_action( 'comment_unapproved_to_approved', array( $this, 'mark_comment_moderated' ), 10, 1 );
+
+		// Assign translatable defaults and apply the message filters on init. This must
+		// not happen in the constructor: it runs before init, and calling __() that early
+		// triggers WordPress's "translation loading triggered too early" notice (6.7+).
+		add_action( 'init', array( $this, 'set_default_messages' ) );
+	}
+
+	/**
+	 * Assign the translatable default messages and apply the message filters.
+	 *
+	 * Hooked to `init` so that translations are available and no __() call runs
+	 * before the textdomain can be loaded. The link text default is handled
+	 * separately in get_flagging_link(), as it is passed per call.
+	 */
+	public function set_default_messages() {
+		$defaults = array(
+			'thank_you_message'       => __( 'Thank you for your feedback. We will look into it.', 'safe-report-comments' ),
+			'invalid_nonce_message'   => __( 'It seems you already reported this comment.', 'safe-report-comments' ),
+			'invalid_values_message'  => __( 'Cheating huh?', 'safe-report-comments' ),
+			'already_flagged_message' => __( 'It seems you already reported this comment.', 'safe-report-comments' ),
+		);
+
+		foreach ( $defaults as $var => $message ) {
+			$this->{$var} = $message;
+		}
 
 		/**
 		 * Apply some filters to easily alter the frontend messages. Example:
@@ -594,9 +626,9 @@ class Safe_Report_Comments {
 	 *
 	 * @param int    $comment_id The comment ID.
 	 * @param string $result_id  Used as attribute ID in markup.
-	 * @param string $text       Text of link.
+	 * @param string $text       Text of link. Defaults to a translated "Report comment".
 	 */
-	public function print_flagging_link( $comment_id = '', $result_id = '', $text = 'Report comment' ) {
+	public function print_flagging_link( $comment_id = '', $result_id = '', $text = '' ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaping done in get_flagging_link
 		echo $this->get_flagging_link( $comment_id, $result_id, $text );
 	}
@@ -606,10 +638,15 @@ class Safe_Report_Comments {
 	 *
 	 * @param int    $comment_id The comment ID.
 	 * @param string $result_id  Used as attribute ID in markup.
-	 * @param string $text       Text of link.
+	 * @param string $text       Text of link. Defaults to a translated "Report comment".
 	 */
-	public function get_flagging_link( $comment_id = '', $result_id = '', $text = 'Report comment' ) {
+	public function get_flagging_link( $comment_id = '', $result_id = '', $text = '' ) {
 		global $in_comment_loop;
+
+		if ( '' === $text ) {
+			$text = __( 'Report comment', 'safe-report-comments' );
+		}
+
 		if ( empty( $comment_id ) && ! $in_comment_loop ) {
 			return esc_html__( 'Wrong usage of print_flagging_link().', 'safe-report-comments' );
 		}

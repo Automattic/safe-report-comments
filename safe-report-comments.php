@@ -3,7 +3,7 @@
  * Plugin Name: Safe Report Comments
  * Plugin URI: https://wordpress.org/plugins/safe-report-comments/
  * Description: Gives visitors the possibility to flag a comment as inappropriate. After reaching a threshold the comment is moved to moderation. If a comment is approved once by a moderator, future reports are ignored.
- * Version: 0.4.1
+ * Version: 0.5.0
  * Requires at least: 6.4
  * Requires PHP: 7.4
  * Author: Thorsten Ott, Daniel Bachhuber, Automattic

@@ -40,6 +40,9 @@
 		"cs": [
 			"@php ./vendor/bin/phpcs"
 		],
+		"i18n": [
+			"wp i18n make-pot . languages/safe-report-comments.pot --slug=safe-report-comments --domain=safe-report-comments"
+		],
 		"lint": [
 			"@php ./vendor/php-parallel-lint/php-parallel-lint/parallel-lint . -e php --exclude vendor --exclude .git"
 		],

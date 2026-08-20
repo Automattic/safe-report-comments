@@ -63,32 +63,39 @@ class Safe_Report_Comments {
 	/**
 	 * "Thank you" message after comment report.
 	 *
-	 * @todo Refactor messages so we can add i18n.
+	 * Translatable default is assigned on `init` via set_default_messages(),
+	 * because __() cannot be used in a property default and must not run before init.
 	 *
 	 * @var string
 	 */
-	public $thank_you_message = 'Thank you for your feedback. We will look into it.';
+	public $thank_you_message = '';
 
 	/**
 	 * Message shown after flagging if nonce is invalid.
 	 *
+	 * Translatable default is assigned on `init` via set_default_messages().
+	 *
 	 * @var string
 	 */
-	public $invalid_nonce_message = 'It seems you already reported this comment.';
+	public $invalid_nonce_message = '';
 
 	/**
 	 * Message shown after flagging if comment ID is invalid.
 	 *
+	 * Translatable default is assigned on `init` via set_default_messages().
+	 *
 	 * @var string
 	 */
-	public $invalid_values_message = 'Cheating huh?';
+	public $invalid_values_message = '';
 
 	/**
 	 * Message shown after flagging if comment has already been flagged by user.
 	 *
+	 * Translatable default is assigned on `init` via set_default_messages().
+	 *
 	 * @var string
 	 */
-	public $already_flagged_message = 'It seems you already reported this comment.';
+	public $already_flagged_message = '';
 
 	/**
 	 * Message shown before flagging if comment has already been flagged by user.
@@ -155,6 +162,31 @@ class Safe_Report_Comments {
 		}
 		add_action( 'comment_unapproved_to_approved', array( $this, 'mark_comment_moderated' ), 10, 1 );
 
+		// Assign translatable defaults and apply the message filters on init. This must
+		// not happen in the constructor: it runs before init, and calling __() that early
+		// triggers WordPress's "translation loading triggered too early" notice (6.7+).
+		add_action( 'init', array( $this, 'set_default_messages' ) );
+	}
+
+	/**
+	 * Assign the translatable default messages and apply the message filters.
+	 *
+	 * Hooked to `init` so that translations are available and no __() call runs
+	 * before the textdomain can be loaded. The link text default is handled
+	 * separately in get_flagging_link(), as it is passed per call.
+	 */
+	public function set_default_messages() {
+		$defaults = array(
+			'thank_you_message'       => __( 'Thank you for your feedback. We will look into it.', 'safe-report-comments' ),
+			'invalid_nonce_message'   => __( 'It seems you already reported this comment.', 'safe-report-comments' ),
+			'invalid_values_message'  => __( 'Cheating huh?', 'safe-report-comments' ),
+			'already_flagged_message' => __( 'It seems you already reported this comment.', 'safe-report-comments' ),
+		);
+
+		foreach ( $defaults as $var => $message ) {
+			$this->{$var} = $message;
+		}
+
 		/**
 		 * Apply some filters to easily alter the frontend messages. Example:
 		 * add_filter( 'safe_report_comments_thank_you_message', 'alter_message' );
@@ -214,7 +246,7 @@ class Safe_Report_Comments {
 		add_action( 'wp_enqueue_scripts', array( $this, 'action_enqueue_scripts' ) );
 
 		if ( $this->auto_init ) {
-			add_filter( 'comment_reply_link', array( $this, 'add_flagging_link' ) );
+			add_filter( 'comment_text', array( $this, 'append_flagging_link' ), 100, 2 );
 		}
 		add_action( 'comment_report_abuse_link', array( $this, 'print_flagging_link' ) );
 
@@ -235,7 +267,7 @@ class Safe_Report_Comments {
 
 		$ajaxurl = apply_filters( 'safe_report_comments_ajax_url', $ajaxurl );
 
-		wp_enqueue_script( $this->plugin_prefix . '-ajax-request', $this->plugin_url . '/js/ajax.js', array( 'jquery' ), '1.0', true );
+		wp_enqueue_script( $this->plugin_prefix . '-ajax-request', $this->plugin_url . '/js/ajax.js', array( 'jquery' ), '2.0', true );
 		wp_localize_script( $this->plugin_prefix . '-ajax-request', 'SafeCommentsAjax', array( 'ajaxurl' => $ajaxurl ) ); // slightly dirty but needed due to possible problems with mapped domains.
 	}
 
@@ -455,7 +487,7 @@ class Safe_Report_Comments {
 				if ( ! isset( $data[ $comment_id ] ) ) {
 					$data[ $comment_id ] = 0;
 				}
-				$data[ $comment_id ]++;
+				++$data[ $comment_id ];
 				$cookie = $this->serialize_cookie( $data );
 				@setcookie( $this->storagecookie, $cookie, time() + $this->cookie_lifetime, COOKIEPATH, COOKIE_DOMAIN );
 				if ( SITECOOKIEPATH != COOKIEPATH ) {
@@ -465,7 +497,7 @@ class Safe_Report_Comments {
 				if ( ! isset( $data[ $comment_id ] ) ) {
 					$data[ $comment_id ] = 0;
 				}
-				$data[ $comment_id ]++;
+				++$data[ $comment_id ];
 				$cookie = $this->serialize_cookie( $data );
 				@setcookie( $this->storagecookie, $cookie, time() + $this->cookie_lifetime, COOKIEPATH, COOKIE_DOMAIN );
 				if ( SITECOOKIEPATH != COOKIEPATH ) {
@@ -485,14 +517,14 @@ class Safe_Report_Comments {
 			if ( ! isset( $transient[ $comment_id ] ) ) {
 				$transient[ $comment_id ] = 0;
 			}
-			$transient[ $comment_id ]++;
+			++$transient[ $comment_id ];
 			set_transient( md5( $this->storagecookie . $remote_addr ), $transient, $this->transient_lifetime );
 		}
 
 
 		$threshold       = (int) get_option( $this->plugin_prefix . '_threshold' );
 		$current_reports = get_comment_meta( $comment_id, $this->plugin_prefix . '_reported', true );
-		$current_reports++;
+		++$current_reports;
 		update_comment_meta( $comment_id, $this->plugin_prefix . '_reported', $current_reports );
 
 
@@ -507,8 +539,13 @@ class Safe_Report_Comments {
 		}
 
 		if ( $current_reports >= $threshold ) {
-			do_action( 'safe_report_comments_mark_flagged', $comment_id );
-			wp_set_comment_status( $comment_id, 'hold' );
+			// Only pull the comment into the moderation queue if it is currently approved.
+			// Comments already in spam or trash have been dealt with, so reporting them
+			// should not resurrect them back into the moderation queue.
+			if ( 'approved' === wp_get_comment_status( $comment_id ) ) {
+				do_action( 'safe_report_comments_mark_flagged', $comment_id );
+				wp_set_comment_status( $comment_id, 'hold' );
+			}
 		}
 	}
 
@@ -527,6 +564,34 @@ class Safe_Report_Comments {
 	}
 
 	/**
+	 * Determine whether a comment may be reported through the public flagging workflow.
+	 *
+	 * The plugin only ever renders a report link for ordinary, publicly visible comments.
+	 * Other records share the comments table and the same numeric ID space, for example
+	 * WooCommerce order notes ( comment_type 'order_note' ), pingbacks and trackbacks.
+	 * Without this gate, any numeric comment ID accompanied by the global report nonce
+	 * could reach moderation, so the report target is validated before it is acted upon.
+	 *
+	 * @param int $comment_id The comment ID being reported.
+	 * @return bool Whether the comment exists and is an ordinary, reportable comment type.
+	 */
+	public function is_reportable_comment( $comment_id ) {
+		$comment = get_comment( $comment_id );
+
+		// Reject non-existent comments so arbitrary IDs cannot accrue report metadata.
+		if ( ! $comment ) {
+			return false;
+		}
+
+		// Only ordinary comments carry a report link. WordPress stores classic comments with
+		// an empty comment_type; 'comment' is accepted for forward compatibility.
+		$reportable_types = apply_filters( 'safe_report_comments_reportable_comment_types', array( '', 'comment' ) );
+		$is_reportable    = in_array( (string) $comment->comment_type, (array) $reportable_types, true );
+
+		return (bool) apply_filters( 'safe_report_comments_is_reportable_comment', $is_reportable, $comment );
+	}
+
+	/**
 	 * Ajax callback to flag/report a comment.
 	 *
 	 * @todo Confirm this callback only receives POST data
@@ -537,6 +602,12 @@ class Safe_Report_Comments {
 		}
 
 		$comment_id = (int) $_REQUEST['comment_id'];
+
+		// Only ordinary public comments carry a report link; refuse anything else, e.g. order notes.
+		if ( ! $this->is_reportable_comment( $comment_id ) ) {
+			$this->cond_die( $this->invalid_values_message );
+		}
+
 		if ( $this->already_flagged( $comment_id ) ) {
 			$this->cond_die( $this->already_flagged_message );
 		}
@@ -555,9 +626,9 @@ class Safe_Report_Comments {
 	 *
 	 * @param int    $comment_id The comment ID.
 	 * @param string $result_id  Used as attribute ID in markup.
-	 * @param string $text       Text of link.
+	 * @param string $text       Text of link. Defaults to a translated "Report comment".
 	 */
-	public function print_flagging_link( $comment_id = '', $result_id = '', $text = 'Report comment' ) {
+	public function print_flagging_link( $comment_id = '', $result_id = '', $text = '' ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaping done in get_flagging_link
 		echo $this->get_flagging_link( $comment_id, $result_id, $text );
 	}
@@ -567,10 +638,15 @@ class Safe_Report_Comments {
 	 *
 	 * @param int    $comment_id The comment ID.
 	 * @param string $result_id  Used as attribute ID in markup.
-	 * @param string $text       Text of link.
+	 * @param string $text       Text of link. Defaults to a translated "Report comment".
 	 */
-	public function get_flagging_link( $comment_id = '', $result_id = '', $text = 'Report comment' ) {
+	public function get_flagging_link( $comment_id = '', $result_id = '', $text = '' ) {
 		global $in_comment_loop;
+
+		if ( '' === $text ) {
+			$text = __( 'Report comment', 'safe-report-comments' );
+		}
+
 		if ( empty( $comment_id ) && ! $in_comment_loop ) {
 			return esc_html__( 'Wrong usage of print_flagging_link().', 'safe-report-comments' );
 		}
@@ -611,20 +687,55 @@ class Safe_Report_Comments {
 	}
 
 	/**
-	 * Callback function to automatically hook in the report link after the comment reply link.
-	 * If you want to control the placement on your own define no_autostart_safe_report_comments in your functions.php file and initialize the class
-	 * with $safe_report_comments = new Safe_Report_Comments( $auto_init = false );
+	 * Append the report link to a comment so the bundled script can position it.
 	 *
-	 * @param string $comment_reply_link Comment reply link markup.
-	 * @return string Modified comment reply link markup.
+	 * Registered on the `comment_text` filter in automatic mode. The previous approach
+	 * parsed the theme-rendered reply-link markup with a regular expression and injected
+	 * the report link into it. That broke whenever a theme altered the reply link, for
+	 * example Twenty Twenty prepends a `do-not-scroll` class, which stopped the pattern
+	 * from matching and silently dropped the link.
+	 *
+	 * Instead the link is rendered at the end of the comment and moved next to the reply
+	 * link on the client, keyed off the reply link's core `data-commentid` attribute, so
+	 * placement no longer depends on any particular markup. This works for both classic
+	 * (`wp_list_comments()`) and block themes, and reaches comments at the maximum
+	 * threading depth, which have no reply link for the old approach to target.
+	 *
+	 * To place the link yourself, disable automatic mode (see the `no_autostart_safe_report_comments`
+	 * constant) and call `do_action( 'comment_report_abuse_link' )` in your comment template.
+	 *
+	 * @param string          $comment_text Text of the current comment.
+	 * @param WP_Comment|null $comment      The current comment object, when provided.
+	 * @return string Comment text, with the report link appended for reportable comments.
 	 */
-	public function add_flagging_link( $comment_reply_link ) {
-		if ( ! preg_match_all( '#^(.*)(<a.+class=["|\']comment-(reply|login)-link["|\'][^>]+>)(.+)(</a>)(.*)$#msiU', $comment_reply_link, $matches ) ) {
-			return '<!-- safe-comments add_flagging_link not matching -->' . $comment_reply_link;
+	public function append_flagging_link( $comment_text, $comment = null ) {
+		// Never add the link within feeds.
+		if ( is_feed() ) {
+			return $comment_text;
 		}
 
-		$comment_reply_link = $matches[1][0] . $matches[2][0] . $matches[4][0] . $matches[5][0] . '<span class="safe-comments-report-link">' . $this->get_flagging_link() . '</span>' . $matches[6][0];
-		return apply_filters( 'safe_report_comments_comment_reply_link', $comment_reply_link );
+		$comment_id = is_object( $comment ) ? (int) $comment->comment_ID : (int) get_comment_ID();
+
+		// Only ordinary public comments carry a report link, so skip pingbacks, order notes, etc.
+		if ( ! $comment_id || ! $this->is_reportable_comment( $comment_id ) ) {
+			return $comment_text;
+		}
+
+		$link = $this->get_flagging_link( $comment_id );
+
+		// Nothing to show; for example, the visitor has already reported this comment.
+		if ( '' === trim( $link ) ) {
+			return $comment_text;
+		}
+
+		// Hidden until the script positions and reveals it; reporting requires JavaScript.
+		$wrapper = sprintf(
+			'<span class="safe-comments-report-link" data-comment-id="%d" style="display:none;">%s</span>',
+			$comment_id,
+			$link
+		);
+
+		return $comment_text . $wrapper;
 	}
 
 	/**
@@ -658,5 +769,4 @@ class Safe_Report_Comments {
 				break;
 		}
 	}
-
 }

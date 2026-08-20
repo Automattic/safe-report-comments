@@ -39,11 +39,13 @@ jobs:
 
     steps:
       - name: Setup PHP
-        uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # 2.37.1
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
-          php-version: "7.4"
+          # Linting and CS run on a recent PHP; the minimum supported version is
+          # checked statically by PHPCompatibilityWP via the testVersion config.
+          php-version: "8.2"
           coverage: none
-          tools: cs2pr
+          tools: composer, cs2pr
 
       # Show PHP lint violations inline in the file diff.
       # @link https://github.com/marketplace/actions/xmllint-problem-matcher
@@ -53,10 +55,10 @@ jobs:
       # Show XML violations inline in the file diff.
       # @link https://github.com/marketplace/actions/xmllint-problem-matcher
       - name: Register XML violations to appear as file diff comments
-        uses: korelstar/xmllint-problem-matcher@1bd292d642ddf3d369d02aaa8b262834d61198c0 # v1.2.0
+        uses: korelstar/xmllint-problem-matcher@dd2ad21bd8a2de0187cb621419537f345e7e509c # v1.3.0
 
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -68,7 +70,9 @@ jobs:
       # Install dependencies and handle caching in one go.
       # @link https://github.com/marketplace/actions/install-composer-dependencies
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@994bb194a4fefcf39449ccf0f7766a4318f1ac76 # v1
+        uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
+        with:
+          composer-options: "--prefer-dist --no-progress"
 
       # Lint PHP.
       - name: Lint PHP against parse errors
@@ -83,10 +87,11 @@ jobs:
           xml-schema-file: ./vendor/phpunit/phpunit/phpunit.xsd
 
       # Check the code-style consistency of the PHP files.
-      # Temporarily disabled: the plugin carries a backlog of pre-existing WPCS 3.x
-      # violations (see PR #13). Re-enable this gate once that cleanup has landed.
-      # - name: Check PHP code style
-      #   run: composer cs -- --report-full --report-checkstyle=./phpcs-report.xml
-      #
-      # - name: Show PHPCS results in PR
-      #   run: cs2pr ./phpcs-report.xml
+      # continue-on-error lets the next step turn the report into inline
+      # annotations; cs2pr then fails the job if any violations were found.
+      - name: Check PHP code style
+        continue-on-error: true
+        run: composer cs -- --report-full --report-checkstyle=./phpcs-report.xml
+
+      - name: Show PHPCS results in PR
+        run: cs2pr ./phpcs-report.xml

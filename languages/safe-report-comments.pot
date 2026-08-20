@@ -1,0 +1,98 @@
+# Copyright (C) 2026 Thorsten Ott, Daniel Bachhuber, Automattic
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Safe Report Comments 0.5.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/safe-report-comments\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-20T00:37:59+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: safe-report-comments\n"
+
+#. Plugin Name of the plugin
+#: safe-report-comments.php
+msgid "Safe Report Comments"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: safe-report-comments.php
+msgid "https://wordpress.org/plugins/safe-report-comments/"
+msgstr ""
+
+#. Description of the plugin
+#: safe-report-comments.php
+msgid "Gives visitors the possibility to flag a comment as inappropriate. After reaching a threshold the comment is moved to moderation. If a comment is approved once by a moderator, future reports are ignored."
+msgstr ""
+
+#. Author of the plugin
+#: safe-report-comments.php
+msgid "Thorsten Ott, Daniel Bachhuber, Automattic"
+msgstr ""
+
+#. Author URI of the plugin
+#: safe-report-comments.php
+msgid "https://automattic.com"
+msgstr ""
+
+#: class-safe-report-comments.php:180
+msgid "Thank you for your feedback. We will look into it."
+msgstr ""
+
+#: class-safe-report-comments.php:181
+#: class-safe-report-comments.php:183
+msgid "It seems you already reported this comment."
+msgstr ""
+
+#: class-safe-report-comments.php:182
+msgid "Cheating huh?"
+msgstr ""
+
+#: class-safe-report-comments.php:213
+msgid "Allow comment flagging"
+msgstr ""
+
+#: class-safe-report-comments.php:220
+msgid "Flagging threshold"
+msgstr ""
+
+#: class-safe-report-comments.php:314
+msgid "Safe Comments:"
+msgstr ""
+
+#: class-safe-report-comments.php:337
+msgid "Allow your visitors to flag a comment as inappropriate."
+msgstr ""
+
+#: class-safe-report-comments.php:350
+msgid "Amount of user reports needed to send a comment to moderation?"
+msgstr ""
+
+#: class-safe-report-comments.php:376
+msgid "Please revise your flagging threshold and enter a number between 1 and 100"
+msgstr ""
+
+#: class-safe-report-comments.php:560
+msgid "Safe Report Comments Notice"
+msgstr ""
+
+#: class-safe-report-comments.php:647
+msgid "Report comment"
+msgstr ""
+
+#: class-safe-report-comments.php:651
+msgid "Wrong usage of print_flagging_link()."
+msgstr ""
+
+#: class-safe-report-comments.php:658
+msgid "This comment does not exist."
+msgstr ""
+
+#: class-safe-report-comments.php:748
+msgctxt "column name"
+msgid "Reported"
+msgstr ""

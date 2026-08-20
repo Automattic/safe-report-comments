@@ -1,0 +1,25 @@
+# Directories
+/.git/
+/.github/
+/.wordpress-org/
+/bin/
+/node_modules/
+/tests/
+/vendor/
+
+# Files
+/.distignore
+/.editorconfig
+/.gitattributes
+/.gitignore
+/.phpcs.xml.dist
+/.wp-env.json
+/.wp-env.override.json
+/CHANGELOG.md
+/composer.json
+/composer.lock
+/phpunit.xml.dist
+
+# Caches and logs
+/.phpunit.cache/
+*.log
